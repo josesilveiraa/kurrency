@@ -49,7 +49,7 @@ object SqlManager {
 
         transaction {
             Users.update({ Users.id eq playerUuid }) {
-                it[Users.balance] = targetBalance
+                it[balance] = targetBalance
             }
         }
     }
@@ -59,7 +59,7 @@ object SqlManager {
 
         transaction {
             Users.update({ Users.id eq playerUuid }) {
-                it[Users.transactions] = targetTransactions
+                it[transactions] = targetTransactions
             }
         }
     }
