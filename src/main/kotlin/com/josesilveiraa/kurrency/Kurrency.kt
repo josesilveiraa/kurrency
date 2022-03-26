@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager
 import com.josesilveiraa.kurrency.command.CashCommand
 import com.josesilveiraa.kurrency.dataclass.User
 import com.josesilveiraa.kurrency.listener.PlayerJoinListener
+import com.josesilveiraa.kurrency.manager.SqlManager
 import com.josesilveiraa.kurrency.table.Users
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
@@ -38,6 +39,8 @@ class Kurrency : JavaPlugin() {
     }
 
     private fun createTables() {
+        SqlManager.connect()
+
         transaction {
             SchemaUtils.create(Users)
         }

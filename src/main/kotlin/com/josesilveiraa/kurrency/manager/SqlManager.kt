@@ -86,7 +86,7 @@ object SqlManager {
         return result
     }
 
-    private fun connect() {
+    fun connect() {
         Database.connect("jdbc:mysql://$sqlHost:$sqlPort/$sqlDatabase", user = sqlUser!!, password = sqlPassword!!, driver = "com.mysql.cj.jdbc.Driver")
     }
 
