@@ -7,10 +7,6 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-group "com.josesilveiraa.kurrency"
-version "1.0-SNAPSHOT"
-
-
 repositories {
     mavenCentral()
     maven("https://papermc.io/repo/repository/maven-public/")
@@ -20,7 +16,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib", KotlinCompilerVersion.VERSION))
-    implementation("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 
     // Exposed
