@@ -10,6 +10,7 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Syntax
 import com.josesilveiraa.kurrency.Kurrency
+import com.josesilveiraa.kurrency.dataclass.User
 import com.josesilveiraa.kurrency.manager.SqlManager
 import org.bukkit.command.CommandSender
 
@@ -21,11 +22,12 @@ class CashCommand : BaseCommand() {
     @CommandCompletion("@players")
     @Description("Shows a player's balance.")
     fun onShow(player: CommandSender, @Optional target: String) {
-        if(Kurrency.users.containsKey(target)) {
-            player.sendMessage("§cError: player not found.")
-        }
 
-        val user = Kurrency.users[player.name]
+        val user: User? = if (Kurrency.users.containsKey(target)) {
+            Kurrency.users[target]
+        } else {
+            SqlManager.getUser(target)
+        }
 
         player.sendMessage("§a${target}'s points: §f${user!!.balance}")
     }
@@ -37,7 +39,7 @@ class CashCommand : BaseCommand() {
     @Description("Sets the target balance.")
     fun onSet(sender: CommandSender, target: String, amount: Double) {
 
-        if(Kurrency.users.containsKey(target)) {
+        if (Kurrency.users.containsKey(target)) {
             Kurrency.users[target]!!.balance = amount
         } else {
             SqlManager.updateUserBalance(target, amount)
@@ -53,10 +55,15 @@ class CashCommand : BaseCommand() {
     @Description("Adds an amount to target's balance.")
     fun onAdd(sender: CommandSender, target: String, amount: Double) {
 
-        if(Kurrency.users.containsKey(target)) {
+        if (Kurrency.users.containsKey(target)) {
             Kurrency.users[target]!!.balance += amount
+        } else if (SqlManager.exists(target)) {
+            val user = SqlManager.getUser(target)
+
+            SqlManager.updateUserBalance(target, user!!.balance + amount)
         } else {
             sender.sendMessage("§cError: player not found.")
+            return
         }
 
         sender.sendMessage("§f${target}'s §abalance set to §f$amount§a.")

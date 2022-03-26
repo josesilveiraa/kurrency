@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager
 import com.josesilveiraa.kurrency.command.CashCommand
 import com.josesilveiraa.kurrency.dataclass.User
 import com.josesilveiraa.kurrency.listener.PlayerJoinListener
+import com.josesilveiraa.kurrency.listener.PlayerQuitListener
 import com.josesilveiraa.kurrency.manager.SqlManager
 import com.josesilveiraa.kurrency.table.Users
 import org.bukkit.event.HandlerList
@@ -48,6 +49,7 @@ class Kurrency : JavaPlugin() {
 
     private fun registerListeners() {
         server.pluginManager.registerEvents(PlayerJoinListener(), plugin!!)
+        server.pluginManager.registerEvents(PlayerQuitListener(), plugin!!)
     }
 
 }

@@ -56,6 +56,17 @@ object SqlManager {
         }
     }
 
+    fun updateUser(playerNickname: String, targetBalance: Double, targetTransactions: Int) {
+        connect()
+
+        transaction {
+            Users.update({ Users.nickname eq playerNickname }) {
+                it[transactions] = targetTransactions
+                it[balance] = targetBalance
+            }
+        }
+    }
+
     fun updateUserTransactions(playerNickname: String, targetTransactions: Int) {
         connect()
 
