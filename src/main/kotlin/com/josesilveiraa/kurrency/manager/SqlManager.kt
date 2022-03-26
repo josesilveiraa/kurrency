@@ -15,8 +15,7 @@ object SqlManager {
     private val sqlPassword = Kurrency.plugin!!.config.getString("mysql.password")
 
     fun createUser(playerUuid: String, targetBalance: Double, targetTransactions: Int) {
-
-        Database.connect("jdbc:mysql://$sqlHost:$sqlPort/$sqlDatabase", user = sqlUser!!, password = sqlPassword!!)
+        connect()
 
         transaction {
             Users.insert {
@@ -28,9 +27,7 @@ object SqlManager {
     }
 
     fun getUser(playerUuid: String): User? {
-
-
-        Database.connect("jdbc:mysql://$sqlHost:$sqlPort/$sqlDatabase", user = sqlUser!!, password = sqlPassword!!)
+        connect()
 
         var user: User? = null
 
@@ -48,7 +45,7 @@ object SqlManager {
     }
 
     fun updateUserBalance(playerUuid: String, targetBalance: Double) {
-        Database.connect("jdbc:mysql://$sqlHost:$sqlPort/$sqlDatabase", user = sqlUser!!, password = sqlPassword!!)
+        connect()
 
         transaction {
             Users.update({ Users.id eq playerUuid }) {
@@ -58,7 +55,7 @@ object SqlManager {
     }
 
     fun updateUserTransactions(playerUuid: String, targetTransactions: Int) {
-        Database.connect("jdbc:mysql://$sqlHost:$sqlPort/$sqlDatabase", user = sqlUser!!, password = sqlPassword!!)
+        connect()
 
         transaction {
             Users.update({ Users.id eq playerUuid }) {
@@ -67,8 +64,8 @@ object SqlManager {
         }
     }
 
-    fun deleteUser(playerUuid: String) {Database.connect("jdbc:mysql://$sqlHost:$sqlPort/$sqlDatabase", user = sqlUser!!, password = sqlPassword!!)
-        Database.connect("jdbc:mysql://$sqlHost:$sqlPort/$sqlDatabase", user = sqlUser!!, password = sqlPassword!!)
+    fun deleteUser(playerUuid: String) {
+        connect()
 
         transaction {
             Users.deleteWhere { Users.id eq playerUuid }
@@ -76,7 +73,7 @@ object SqlManager {
     }
 
     fun exists(playerUuid: String): Boolean {
-        Database.connect("jdbc:mysql://$sqlHost:$sqlPort/$sqlDatabase", user = sqlUser!!, password = sqlPassword!!)
+        connect()
 
         var result = false
 
@@ -87,6 +84,10 @@ object SqlManager {
         }
 
         return result
+    }
+
+    private fun connect() {
+        Database.connect("jdbc:mysql://$sqlHost:$sqlPort/$sqlDatabase", user = sqlUser!!, password = sqlPassword!!, driver = "com.mysql.cj.jdbc.Driver")
     }
 
 }
