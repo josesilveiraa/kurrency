@@ -14,71 +14,73 @@ object SqlManager {
     private val sqlUser = Kurrency.plugin!!.config.getString("mysql.user")
     private val sqlPassword = Kurrency.plugin!!.config.getString("mysql.password")
 
-    fun createUser(playerUuid: String, targetBalance: Double, targetTransactions: Int) {
+    fun createUser(playerUuid: String, targetNickname: String, targetBalance: Double, targetTransactions: Int) {
         connect()
 
         transaction {
             Users.insert {
                 it[id] = playerUuid
+                it[nickname] = targetNickname
                 it[balance] = targetBalance
                 it[transactions] = targetTransactions
             }
         }
     }
 
-    fun getUser(playerUuid: String): User? {
+    fun getUser(playerNickname: String): User? {
         connect()
 
         var user: User? = null
 
         transaction {
-            val query = Users.select { Users.id eq playerUuid }.first()
+            val query = Users.select { Users.nickname eq playerNickname }.first()
 
             val id = query[Users.id]
+            val nickname = query[Users.nickname]
             val balance = query[Users.balance]
             val transactions = query[Users.transactions]
 
-            user = User(id, balance, transactions)
+            user = User(id, nickname, balance, transactions)
         }
 
         return user
     }
 
-    fun updateUserBalance(playerUuid: String, targetBalance: Double) {
+    fun updateUserBalance(playerNickname: String, targetBalance: Double) {
         connect()
 
         transaction {
-            Users.update({ Users.id eq playerUuid }) {
+            Users.update({ Users.nickname eq playerNickname }) {
                 it[balance] = targetBalance
             }
         }
     }
 
-    fun updateUserTransactions(playerUuid: String, targetTransactions: Int) {
+    fun updateUserTransactions(playerNickname: String, targetTransactions: Int) {
         connect()
 
         transaction {
-            Users.update({ Users.id eq playerUuid }) {
+            Users.update({ Users.nickname eq playerNickname }) {
                 it[transactions] = targetTransactions
             }
         }
     }
 
-    fun deleteUser(playerUuid: String) {
+    fun deleteUser(playerNickname: String) {
         connect()
 
         transaction {
-            Users.deleteWhere { Users.id eq playerUuid }
+            Users.deleteWhere { Users.nickname eq playerNickname }
         }
     }
 
-    fun exists(playerUuid: String): Boolean {
+    fun exists(playerNickname: String): Boolean {
         connect()
 
         var result = false
 
         transaction {
-            val query = Users.select { Users.id eq playerUuid }
+            val query = Users.select { Users.nickname eq playerNickname }
 
             result = !query.empty()
         }

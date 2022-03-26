@@ -13,14 +13,14 @@ class PlayerJoinListener : Listener {
         val player = event.player
         val uuid: String = player.uniqueId.toString()
 
-        if(!SqlManager.exists(uuid)) {
-            SqlManager.createUser(uuid, 0.0, 0)
+        if(!SqlManager.exists(player.name)) {
+            SqlManager.createUser(uuid, player.name, 0.0, 0)
         }
 
-        if(!Kurrency.users.containsKey(uuid)) {
-            val user = SqlManager.getUser(uuid)
+        if(!Kurrency.users.containsKey(player.name)) {
+            val user = SqlManager.getUser(player.name)
 
-            Kurrency.users[uuid] = user!!
+            Kurrency.users[player.name] = user!!
         }
     }
 
