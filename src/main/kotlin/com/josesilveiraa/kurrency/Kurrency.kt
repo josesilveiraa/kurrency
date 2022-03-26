@@ -1,9 +1,9 @@
 package com.josesilveiraa.kurrency
 
 import co.aikar.commands.PaperCommandManager
+import com.josesilveiraa.kurrency.command.CashCommand
 import com.josesilveiraa.kurrency.dataclass.User
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.UUID
 
 class Kurrency : JavaPlugin() {
 
@@ -26,6 +26,7 @@ class Kurrency : JavaPlugin() {
 
     private fun init() {
         manager = PaperCommandManager(plugin!!)
+        manager!!.registerCommand(CashCommand())
     }
 
 }
