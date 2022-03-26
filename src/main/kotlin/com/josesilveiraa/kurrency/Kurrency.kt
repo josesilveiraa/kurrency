@@ -35,6 +35,7 @@ class Kurrency : JavaPlugin() {
         manager = PaperCommandManager(plugin!!)
         manager!!.registerCommand(CashCommand())
 
+        saveDefaultConfig()
         createTables()
         registerListeners()
     }
