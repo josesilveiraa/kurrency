@@ -26,11 +26,9 @@ dependencies {
 }
 
 shadowJar {
-    relocate 'co.aikar.commands', '[YOUR PLUGIN PACKAGE].acf'
-    relocate 'co.aikar.locales', '[YOUR PLUGIN PACKAGE].locales'
+    relocate 'co.aikar.commands', 'com.josesilveiraa.kurrency.acf'
+    relocate 'co.aikar.locales', 'com.josesilveiraa.kurrency.locales'
 }
-
-build.dependsOn shadowJar
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
