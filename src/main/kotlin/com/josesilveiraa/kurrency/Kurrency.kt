@@ -7,6 +7,7 @@ import com.josesilveiraa.kurrency.listener.PlayerJoinListener
 import com.josesilveiraa.kurrency.listener.PlayerQuitListener
 import com.josesilveiraa.kurrency.manager.SqlManager
 import com.josesilveiraa.kurrency.table.Users
+import com.josesilveiraa.kurrency.task.AutoSaveTask
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -29,6 +30,7 @@ class Kurrency : JavaPlugin() {
 
     override fun onDisable() {
         HandlerList.unregisterAll(plugin!!)
+        users.clear()
     }
 
     private fun init() {
@@ -38,6 +40,7 @@ class Kurrency : JavaPlugin() {
         saveDefaultConfig()
         createTables()
         registerListeners()
+        initTasks()
     }
 
     private fun createTables() {
@@ -51,6 +54,10 @@ class Kurrency : JavaPlugin() {
     private fun registerListeners() {
         server.pluginManager.registerEvents(PlayerJoinListener(), plugin!!)
         server.pluginManager.registerEvents(PlayerQuitListener(), plugin!!)
+    }
+
+    private fun initTasks() {
+        server.scheduler.runTaskTimerAsynchronously(plugin!!, AutoSaveTask(), 20 * 60 * 5, 20 * 60 * 5)
     }
 
 }
