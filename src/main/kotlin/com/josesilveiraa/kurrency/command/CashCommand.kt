@@ -9,13 +9,14 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Syntax
+import com.josesilveiraa.kurrency.helper.ItemBuilder
 import com.josesilveiraa.kurrency.manager.UserManager
 import de.tr7zw.changeme.nbtapi.NBTItem
-import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.ItemFlag
 
 @CommandAlias("cash|points")
 class CashCommand : BaseCommand() {
@@ -90,17 +91,17 @@ class CashCommand : BaseCommand() {
     @Syntax("[amount]")
     @CommandPermission("kurrency.command.pay")
     @Description("Creates a claimable paper.")
-    fun onPaperCreate(player: Player, amount: Double) {
-        val item = ItemStack(Material.PAPER, 1)
-        val meta = item.itemMeta
+    fun onPaperCreate(player: Player, value: Double) {
 
-        meta.displayName(Component.text("§aCash paper"))
-        meta.lore(listOf(Component.text("§7Value: §f$amount")))
+        val item = ItemBuilder(Material.PAPER)
+            .enchantment(Enchantment.DURABILITY, 1)
+            .flags(ItemFlag.HIDE_ENCHANTS)
+            .lore("§7Value: §f$value")
+            .build()
 
-        item.itemMeta = meta
 
         val nbti = NBTItem(item)
-        nbti.setDouble("value", amount)
+        nbti.setDouble("value", value)
 
         player.inventory.addItem(nbti.item)
     }
