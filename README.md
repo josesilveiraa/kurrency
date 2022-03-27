@@ -2,4 +2,8 @@
 
 ## What's Kurrency?
 
-It's a second-economy plugin for Spigot servers under construction.
+Kurrency is a second-economy plugin for Spigot servers under construction.
+
+## Disclaimer
+
+I didn't test the plugin, I'll do it when I have more time, don't use it.
