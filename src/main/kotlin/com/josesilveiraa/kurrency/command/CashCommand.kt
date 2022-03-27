@@ -9,10 +9,9 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Syntax
-import com.josesilveiraa.kurrency.Kurrency
-import com.josesilveiraa.kurrency.dataclass.User
-import com.josesilveiraa.kurrency.manager.SqlManager
+import com.josesilveiraa.kurrency.manager.UserManager
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 @CommandAlias("cash|points")
 class CashCommand : BaseCommand() {
@@ -22,14 +21,9 @@ class CashCommand : BaseCommand() {
     @CommandCompletion("@players")
     @Description("Shows a player's balance.")
     fun onShow(player: CommandSender, @Optional target: String) {
+        val balance = UserManager.getBalance(target) ?: return
 
-        val user: User? = if (Kurrency.users.containsKey(target)) {
-            Kurrency.users[target]
-        } else {
-            SqlManager.getUser(target)
-        }
-
-        player.sendMessage("§a${target}'s points: §f${user!!.balance}")
+        player.sendMessage("§a${target}'s points: §f${balance}")
     }
 
     @Subcommand("set")
@@ -38,11 +32,9 @@ class CashCommand : BaseCommand() {
     @CommandPermission("kurrency.command.set")
     @Description("Sets the target balance.")
     fun onSet(sender: CommandSender, target: String, amount: Double) {
-
-        if (Kurrency.users.containsKey(target)) {
-            Kurrency.users[target]!!.balance = amount
-        } else {
-            SqlManager.updateUserBalance(target, amount)
+        if(!UserManager.setBalance(target, amount)) {
+            sender.sendMessage("§cAn error occurred.")
+            return
         }
 
         sender.sendMessage("§f${target}'s §abalance set to §f$amount§a.")
@@ -54,19 +46,40 @@ class CashCommand : BaseCommand() {
     @CommandPermission("kurrency.command.add")
     @Description("Adds an amount to target's balance.")
     fun onAdd(sender: CommandSender, target: String, amount: Double) {
-
-        if (Kurrency.users.containsKey(target)) {
-            Kurrency.users[target]!!.balance += amount
-        } else if (SqlManager.exists(target)) {
-            val user = SqlManager.getUser(target)
-
-            SqlManager.updateUserBalance(target, user!!.balance + amount)
-        } else {
-            sender.sendMessage("§cError: player not found.")
+        if(!UserManager.addToBalance(target, amount)) {
+            sender.sendMessage("§cUser not found.")
             return
         }
 
         sender.sendMessage("§f${target}'s §abalance set to §f$amount§a.")
+    }
+
+    @Subcommand("remove")
+    @Syntax("[player] [amount]")
+    @CommandCompletion("@players")
+    @CommandPermission("kurrency.command.remove")
+    @Description("Removes an amount of the target's balance.")
+    fun onRemove(sender: CommandSender, target: String, amount: Double) {
+        if(!UserManager.removeFromBalance(target, amount)) {
+            sender.sendMessage("§cUser not found.")
+            return
+        }
+
+        sender.sendMessage("§aRemoved §f$amount §afrom §f$target§a's balance.")
+    }
+
+    @Subcommand("pay")
+    @Syntax("[player] [amount]")
+    @CommandCompletion("@players")
+    @CommandPermission("kurrency.command.pay")
+    @Description("Pays another player.")
+    fun onPay(sender: Player, target: String, amount: Double) {
+        if(!UserManager.withdraw(sender.name, target, amount)) {
+            sender.sendMessage("§cAn error occurred.")
+            return
+        }
+
+        sender.sendMessage("§aPaid §f$amount §ato §f$target§a.")
     }
 
 }
