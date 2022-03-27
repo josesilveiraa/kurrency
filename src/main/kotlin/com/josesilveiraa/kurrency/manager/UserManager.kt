@@ -3,6 +3,9 @@ package com.josesilveiraa.kurrency.manager
 import com.josesilveiraa.kurrency.Kurrency
 import com.josesilveiraa.kurrency.dataclass.User
 
+/*
+    Utility class to help with transactions.
+ */
 object UserManager {
 
     private fun getUser(playerNickname: String): User? {
