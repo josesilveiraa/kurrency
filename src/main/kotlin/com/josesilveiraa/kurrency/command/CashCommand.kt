@@ -25,10 +25,17 @@ class CashCommand : BaseCommand() {
     @Syntax("[player]")
     @CommandCompletion("@players")
     @Description("Shows a player's balance.")
-    fun onShow(player: CommandSender, @Optional target: String) {
-        val balance = UserManager.getBalance(target) ?: return
+    fun onShow(sender: CommandSender, @Optional target: String) {
+        val user = UserManager.getUser(target)
 
-        player.sendMessage("§a${target}'s points: §f${balance}")
+        if(user == null) {
+            sender.sendMessage("§cUser not found.")
+            return
+        }
+
+        val balance = user.balance
+
+        sender.sendMessage("§a${target}'s points: §f${balance}")
     }
 
     @Subcommand("set")

@@ -8,7 +8,7 @@ import com.josesilveiraa.kurrency.dataclass.User
  */
 object UserManager {
 
-    private fun getUser(playerNickname: String): User? {
+    fun getUser(playerNickname: String): User? {
         return if (Kurrency.users.containsKey(playerNickname)) {
             Kurrency.users[playerNickname]!!
 
@@ -18,12 +18,6 @@ object UserManager {
         } else {
             null
         }
-    }
-
-    fun getBalance(playerNickname: String): Double? {
-        val user = getUser(playerNickname) ?: return null
-
-        return user.balance
     }
 
     fun addToBalance(playerNickname: String, amount: Double): Boolean {
