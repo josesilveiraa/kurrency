@@ -10,10 +10,9 @@ class PlayerQuitListener : Listener {
     @EventHandler
     fun on(event: PlayerQuitEvent) {
         val player = event.player
-        val user = Kurrency.users[player.name]
+        val user = Kurrency.cache[player.name]
 
         user!!.save()
-        Kurrency.users.remove(player.name)
     }
 
 }

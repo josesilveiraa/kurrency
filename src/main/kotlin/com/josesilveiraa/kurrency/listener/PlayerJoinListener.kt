@@ -17,10 +17,10 @@ class PlayerJoinListener : Listener {
             SqlManager.createUser(uuid, player.name, 0.0, 0)
         }
 
-        if(!Kurrency.users.containsKey(player.name)) {
+        if(!Kurrency.cache.containsKey(player.name)) {
             val user = SqlManager.getUser(player.name)
 
-            Kurrency.users[player.name] = user!!
+            Kurrency.cache[player.name] = user!!
         }
     }
 

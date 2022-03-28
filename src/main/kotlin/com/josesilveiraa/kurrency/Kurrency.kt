@@ -18,7 +18,7 @@ class Kurrency : JavaPlugin() {
     companion object {
         var plugin: JavaPlugin? = null
         var manager: PaperCommandManager? = null
-        var users: MutableMap<String, User> = mutableMapOf()
+        var cache: MutableMap<String, User> = mutableMapOf()
     }
 
     override fun onEnable() {
@@ -30,7 +30,7 @@ class Kurrency : JavaPlugin() {
 
     override fun onDisable() {
         HandlerList.unregisterAll(plugin!!)
-        users.clear()
+        cache.clear()
     }
 
     private fun init() {
@@ -41,6 +41,8 @@ class Kurrency : JavaPlugin() {
         createTables()
         registerListeners()
         initTasks()
+
+        SqlManager.cacheAll()
     }
 
     private fun createTables() {

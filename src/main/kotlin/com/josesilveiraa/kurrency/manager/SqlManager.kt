@@ -46,16 +46,6 @@ object SqlManager {
         return user
     }
 
-    fun updateUserBalance(playerNickname: String, targetBalance: Double) {
-        connect()
-
-        transaction {
-            Users.update({ Users.nickname eq playerNickname }) {
-                it[balance] = targetBalance
-            }
-        }
-    }
-
     fun updateUser(playerNickname: String, targetBalance: Double, targetTransactions: Int) {
         connect()
 
@@ -64,24 +54,6 @@ object SqlManager {
                 it[transactions] = targetTransactions
                 it[balance] = targetBalance
             }
-        }
-    }
-
-    fun updateUserTransactions(playerNickname: String, targetTransactions: Int) {
-        connect()
-
-        transaction {
-            Users.update({ Users.nickname eq playerNickname }) {
-                it[transactions] = targetTransactions
-            }
-        }
-    }
-
-    fun deleteUser(playerNickname: String) {
-        connect()
-
-        transaction {
-            Users.deleteWhere { Users.nickname eq playerNickname }
         }
     }
 
@@ -97,6 +69,24 @@ object SqlManager {
         }
 
         return result
+    }
+
+    fun cacheAll() {
+        connect()
+
+        transaction {
+            val query = Users.selectAll()
+
+            query.forEach {
+                val userId = it[Users.id]
+                val nickname = it[Users.nickname]
+                val balance = it[Users.balance]
+                val transactions = it[Users.transactions]
+
+                val user = User(userId, nickname, balance, transactions)
+                Kurrency.cache[userId] = user
+            }
+        }
     }
 
     fun connect() {

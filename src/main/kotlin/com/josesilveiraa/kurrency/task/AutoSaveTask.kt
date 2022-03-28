@@ -4,6 +4,6 @@ import com.josesilveiraa.kurrency.Kurrency
 
 class AutoSaveTask : Runnable {
     override fun run() {
-        Kurrency.users.forEach { it.value.save() }
+        Kurrency.cache.forEach { it.value.save() }
     }
 }

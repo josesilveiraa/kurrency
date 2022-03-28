@@ -9,8 +9,8 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import co.aikar.commands.annotation.Syntax
+import com.josesilveiraa.kurrency.Kurrency
 import com.josesilveiraa.kurrency.helper.ItemBuilder
-import com.josesilveiraa.kurrency.manager.UserManager
 import de.tr7zw.changeme.nbtapi.NBTItem
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
@@ -26,7 +26,7 @@ class CashCommand : BaseCommand() {
     @CommandCompletion("@players")
     @Description("Shows a player's balance.")
     fun onShow(sender: CommandSender, @Optional target: String) {
-        val user = UserManager.getUser(target)
+        val user = Kurrency.cache[target]
 
         if(user == null) {
             sender.sendMessage("§cUser not found.")
@@ -44,10 +44,14 @@ class CashCommand : BaseCommand() {
     @CommandPermission("kurrency.command.set")
     @Description("Sets the target balance.")
     fun onSet(sender: CommandSender, target: String, amount: Double) {
-        if(!UserManager.setBalance(target, amount)) {
-            sender.sendMessage("§cAn error occurred.")
+        val user = Kurrency.cache[target]
+
+        if(user == null) {
+            sender.sendMessage("§cUser not found.")
             return
         }
+
+        user.balance = amount
 
         sender.sendMessage("§f${target}'s §abalance set to §f$amount§a.")
     }
@@ -58,12 +62,16 @@ class CashCommand : BaseCommand() {
     @CommandPermission("kurrency.command.add")
     @Description("Adds an amount to target's balance.")
     fun onAdd(sender: CommandSender, target: String, amount: Double) {
-        if(!UserManager.addToBalance(target, amount)) {
+        val user = Kurrency.cache[target]
+
+        if(user == null) {
             sender.sendMessage("§cUser not found.")
             return
         }
 
-        sender.sendMessage("§f${target}'s §abalance set to §f$amount§a.")
+        user.balance += amount
+
+        sender.sendMessage("§f$amount §aadded to §f$target's §abalance.")
     }
 
     @Subcommand("remove")
@@ -72,10 +80,21 @@ class CashCommand : BaseCommand() {
     @CommandPermission("kurrency.command.remove")
     @Description("Removes an amount of the target's balance.")
     fun onRemove(sender: CommandSender, target: String, amount: Double) {
-        if(!UserManager.removeFromBalance(target, amount)) {
+        val user = Kurrency.cache[target]
+
+        if(user == null) {
             sender.sendMessage("§cUser not found.")
             return
         }
+
+        val targetBalance = user.balance - amount
+
+        if(targetBalance < 0.0) {
+            sender.sendMessage("§cThe user can't be with a negative balance.")
+            return
+        }
+
+        user.balance = targetBalance
 
         sender.sendMessage("§aRemoved §f$amount §afrom §f$target§a's balance.")
     }
@@ -85,13 +104,26 @@ class CashCommand : BaseCommand() {
     @CommandCompletion("@players")
     @CommandPermission("kurrency.command.pay")
     @Description("Pays another player.")
-    fun onPay(sender: Player, target: String, amount: Double) {
-        if(!UserManager.withdraw(sender.name, target, amount)) {
-            sender.sendMessage("§cAn error occurred.")
+    fun onPay(player: Player, target: String, amount: Double) {
+        val receiverUser = Kurrency.cache[target]
+        val selfUser = Kurrency.cache[player.name]
+
+        if(receiverUser == null) {
+            player.sendMessage("§cUser not found.")
             return
         }
 
-        sender.sendMessage("§aPaid §f$amount §ato §f$target§a.")
+        if(selfUser == null) return
+
+        if((selfUser.balance - amount) < 0.0) {
+            player.sendMessage("§cYour balance can't be negative.")
+            return
+        }
+
+        selfUser.balance -= amount
+        receiverUser.balance += amount
+
+        player.sendMessage("§aPaid §f$amount §ato §f$target§a.")
     }
 
     @Subcommand("paper")
